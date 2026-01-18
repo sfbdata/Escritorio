@@ -1,0 +1,16 @@
+# Symfony
+/var/
+/vendor/
+/node_modules/
+/public/bundles/
+/.env.local
+/.env.local.php
+/.env.*.local
+
+# Docker
+/db_data/
+/*.log
+
+# IDE
+/.idea/
+/.vscode/

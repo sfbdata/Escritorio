@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de Funcionários{% endblock %}
+
+{% block body %}
+    <h1>Lista de Funcionários</h1>
+    <ul>
+        {% for funcionario in funcionarios %}
+            <li>
+                {{ funcionario.nome }} - {{ funcionario.cargo }} - {{ funcionario.email }} - {{ funcionario.telefone }}
+                <br>
+                <strong>Processos:</strong>
+                <ul>
+                    {% for processo in funcionario.processos %}
+                        <li>{{ processo.numero }} - {{ processo.status }}</li>
+                    {% else %}
+                        <li>Nenhum processo vinculado</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% else %}
+            <li>Nenhum funcionário encontrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

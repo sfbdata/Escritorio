@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de Clientes{% endblock %}
+
+{% block body %}
+    <h1>Lista de Clientes</h1>
+    <ul>
+        {% for cliente in clientes %}
+            <li>{{ cliente.nome }} - {{ cliente.email }} - {{ cliente.telefone }}</li>
+        {% else %}
+            <li>Nenhum cliente encontrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

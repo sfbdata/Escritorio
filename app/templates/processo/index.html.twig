@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de Processos{% endblock %}
+
+{% block body %}
+    <h1>Lista de Processos</h1>
+    <ul>
+        {% for processo in processos %}
+            <li>
+                <strong>Número:</strong> {{ processo.numero }} <br>
+                <strong>Descrição:</strong> {{ processo.descricao }} <br>
+                <strong>Status:</strong> {{ processo.status }} <br>
+                <strong>Data:</strong> {{ processo.data|date('d/m/Y') }} <br>
+                <strong>Prazo:</strong> {{ processo.proximoPrazo|date('d/m/Y H:i') }} <br>
+
+                <strong>Clientes:</strong>
+                <ul>
+                    {% for cliente in processo.cliente %}
+                        <li>{{ cliente.nome }} - {{ cliente.email }}</li>
+                    {% else %}
+                        <li>Nenhum cliente vinculado</li>
+                    {% endfor %}
+                </ul>
+
+                <strong>Responsáveis:</strong>
+                <ul>
+                    {% for funcionario in processo.responsavel %}
+                        <li>{{ funcionario.nome }} - {{ funcionario.cargo }}</li>
+                    {% else %}
+                        <li>Nenhum responsável vinculado</li>
+                    {% endfor %}
+                </ul>
+
+                <strong>Documentos:</strong>
+                <ul>
+                    {% for documento in processo.documentos %}
+                        <li>{{ documento.titulo }} ({{ documento.arquivo }})</li>
+                    {% else %}
+                        <li>Nenhum documento anexado</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% else %}
+            <li>Nenhum processo encontrado.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

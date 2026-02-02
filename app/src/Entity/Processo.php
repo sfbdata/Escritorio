@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User; // importa a entidade User
 
 #[ORM\Entity(repositoryClass: ProcessoRepository::class)]
 class Processo
@@ -26,10 +27,10 @@ class Processo
     private ?string $status = null;
 
     /**
-     * @var Collection<int, Cliente>
+     * @var Collection<int, User>
      */
-    #[ORM\ManyToMany(targetEntity: Cliente::class, inversedBy: 'processos')]
-    private Collection $cliente;
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'processos')]
+    private Collection $users;
 
     /**
      * @var Collection<int, Funcionario>
@@ -51,7 +52,7 @@ class Processo
 
     public function __construct()
     {
-        $this->cliente = new ArrayCollection();
+        $this->users = new ArrayCollection();
         $this->responsavel = new ArrayCollection();
         $this->documentos = new ArrayCollection();
     }
@@ -69,7 +70,6 @@ class Processo
     public function setNumero(string $numero): static
     {
         $this->numero = $numero;
-
         return $this;
     }
 
@@ -81,7 +81,6 @@ class Processo
     public function setDescricao(?string $descricao): static
     {
         $this->descricao = $descricao;
-
         return $this;
     }
 
@@ -93,31 +92,28 @@ class Processo
     public function setStatus(?string $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
     /**
-     * @return Collection<int, Cliente>
+     * @return Collection<int, User>
      */
-    public function getCliente(): Collection
+    public function getUsers(): Collection
     {
-        return $this->cliente;
+        return $this->users;
     }
 
-    public function addCliente(Cliente $cliente): static
+    public function addUser(User $user): static
     {
-        if (!$this->cliente->contains($cliente)) {
-            $this->cliente->add($cliente);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
         }
-
         return $this;
     }
 
-    public function removeCliente(Cliente $cliente): static
+    public function removeUser(User $user): static
     {
-        $this->cliente->removeElement($cliente);
-
+        $this->users->removeElement($user);
         return $this;
     }
 
@@ -134,14 +130,12 @@ class Processo
         if (!$this->responsavel->contains($responsavel)) {
             $this->responsavel->add($responsavel);
         }
-
         return $this;
     }
 
     public function removeResponsavel(Funcionario $responsavel): static
     {
         $this->responsavel->removeElement($responsavel);
-
         return $this;
     }
 
@@ -153,7 +147,6 @@ class Processo
     public function setData(?\DateTime $data): static
     {
         $this->data = $data;
-
         return $this;
     }
 
@@ -165,7 +158,6 @@ class Processo
     public function setProximoPrazo(?\DateTime $proximoPrazo): static
     {
         $this->proximoPrazo = $proximoPrazo;
-
         return $this;
     }
 
@@ -183,19 +175,16 @@ class Processo
             $this->documentos->add($documento);
             $documento->setProcesso($this);
         }
-
         return $this;
     }
 
     public function removeDocumento(Documento $documento): static
     {
         if ($this->documentos->removeElement($documento)) {
-            // set the owning side to null (unless already changed)
             if ($documento->getProcesso() === $this) {
                 $documento->setProcesso(null);
             }
         }
-
         return $this;
     }
 }

@@ -6,6 +6,7 @@ use App\Repository\DocumentoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User; // importa a entidade User
 
 #[ORM\Entity(repositoryClass: DocumentoRepository::class)]
 class Documento
@@ -19,20 +20,26 @@ class Documento
     private ?string $titulo = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $arquivo = null;
+    private ?string $caminho = null;
 
     #[ORM\ManyToOne(inversedBy: 'documentos')]
     private ?Processo $processo = null;
 
     /**
-     * @var Collection<int, Cliente>
+     * @var Collection<int, User>
      */
-    #[ORM\ManyToMany(targetEntity: Cliente::class, inversedBy: 'documentos')]
-    private Collection $clientes;
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'documentos')]
+    private Collection $users;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $criadoEm = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $modificadoEm = null;
 
     public function __construct()
     {
-        $this->clientes = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,14 +59,17 @@ class Documento
         return $this;
     }
 
-    public function getArquivo(): ?string
+    public function getcaminho(): ?string
     {
-        return $this->arquivo;
+        return $this->caminho
+;
     }
 
-    public function setArquivo(string $arquivo): static
+    public function setcaminho(string $caminho): static
     {
-        $this->arquivo = $arquivo;
+        $this->caminho
+ = $caminho
+;
 
         return $this;
     }
@@ -77,25 +87,49 @@ class Documento
     }
 
     /**
-     * @return Collection<int, Cliente>
+     * @return Collection<int, User>
      */
-    public function getClientes(): Collection
+    public function getUsers(): Collection
     {
-        return $this->clientes;
+        return $this->users;
     }
 
-    public function addCliente(Cliente $cliente): static
+    public function addUser(User $user): static
     {
-        if (!$this->clientes->contains($cliente)) {
-            $this->clientes->add($cliente);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
         }
 
         return $this;
     }
 
-    public function removeCliente(Cliente $cliente): static
+    public function removeUser(User $user): static
     {
-        $this->clientes->removeElement($cliente);
+        $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    public function getCriadoEm(): ?\DateTimeImmutable
+    {
+        return $this->criadoEm;
+    }
+
+    public function setCriadoEm(\DateTimeImmutable $criadoEm): static
+    {
+        $this->criadoEm = $criadoEm;
+
+        return $this;
+    }
+
+    public function getModificadoEm(): ?\DateTimeImmutable
+    {
+        return $this->modificadoEm;
+    }
+
+    public function setModificadoEm(\DateTimeImmutable $modificadoEm): static
+    {
+        $this->modificadoEm = $modificadoEm;
 
         return $this;
     }

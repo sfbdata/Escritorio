@@ -1,0 +1,7 @@
+# Docker volumes e logs
+/db_data/
+/*.log
+
+# Configurações de IDE
+/.idea/
+/.vscode/

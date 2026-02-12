@@ -5,3 +5,7 @@
 # Configurações de IDE
 /.idea/
 /.vscode/
+
+# Histórico e cache locais
+.bash_history
+.composer/

@@ -1,0 +1,40 @@
+{# templates/_sidebar.html.twig #}
+<div class="sidebar">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('homepage') }}">Home</a>
+        </li>
+
+        {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_tenant_index') }}">Tenants</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_tenant_new') }}">Novo Tenant</a>
+            </li>
+        {% elseif 'ROLE_ADMIN' in app.user.roles %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('invite_user') }}">Convidar Usuários</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_tenant_show', {'id': app.user.tenant.id}) }}">Meu Tenant</a>
+            </li>
+        {% endif %}
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('app_logout') }}">Sair</a>
+        </li>
+    </ul>
+
+    <div class="sidebar-user">
+        <div class="user-info">
+            <div class="avatar">
+                {{ app.user.fullName|slice(0,1)|upper }}
+            </div>
+            <div class="user-details">
+                <a href="{{ path('app_profile') }}" class="user-name">{{ app.user.fullName }}</a>
+                <div class="user-email">{{ app.user.email }}</div>
+            </div>
+        </div>
+    </div>
+</div>

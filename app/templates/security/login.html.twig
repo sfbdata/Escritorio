@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login - Sistema Jurídico{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background: linear-gradient(135deg, #1f2937, #4b5563);
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+    }
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+    }
+    .login-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+    .login-container h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #1f2937;
+        font-weight: 600;
+        font-size: 1.8rem;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 15px;
+    }
+    .btn-login {
+        width: 100%;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1f2937, #374151);
+        color: #fff;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-login:hover {
+        background: linear-gradient(135deg, #111827, #1f2937);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .extra-links {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+    }
+    .extra-links a {
+        color: #1f2937;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .extra-links a:hover {
+        text-decoration: underline;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-container">
+        <h1>Entrar</h1>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            <div class="mb-3">
+                <label for="inputEmail" class="form-label fw-bold">Email</label>
+                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" required autofocus>
+            </div>
+
+            <div class="mb-3">
+                <label for="inputPassword" class="form-label fw-bold">Senha</label>
+                <input type="password" name="password" id="inputPassword" class="form-control" required>
+            </div>
+
+            <button class="btn-login" type="submit">Login</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

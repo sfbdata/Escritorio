@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Tenant{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Editar Tenant</h2>
+
+    {{ include('tenant/_form.html.twig', {'button_label': 'Salvar'}) }}
+
+    <div class="mt-3">
+        {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
+            <a href="{{ path('app_tenant_index') }}" class="btn btn-secondary">Voltar para a lista</a>
+        {% endif %}
+
+        {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
+            {{ include('tenant/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

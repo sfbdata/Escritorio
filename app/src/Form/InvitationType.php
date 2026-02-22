@@ -23,13 +23,9 @@ class InvitationType extends AbstractType
             ])
             ->add('roles', ChoiceType::class, [
                 'label' => 'Perfil',
-                'choices' => [
-                    'Advogado' => 'ROLE_ADVOGADO',
-                    'Financeiro' => 'ROLE_FINANCEIRO',
-                    'Administrativo' => 'ROLE_ADMINISTRATIVO',
-                ],
+                'choices' => RolesProfile::ROLES,
                 'expanded' => false,
-                'multiple' => true, // 🔹 agora retorna array
+                'multiple' => true, // retorna array
             ]);
     }
 

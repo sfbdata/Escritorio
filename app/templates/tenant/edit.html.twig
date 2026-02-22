@@ -1,19 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Editar Tenant{% endblock %}
+{% block title %}Editar Escritórios{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h2>Editar Tenant</h2>
+<div class="tenant-container tenant-form">
+    <h2 class="page-title">Editar Escritório</h2>
 
-    {{ include('tenant/_form.html.twig', {'button_label': 'Salvar'}) }}
+    {# Formulário para editar nome #}
+    <h4>Editar Nome</h4>
+    {{ form_start(nameForm) }}
+        {{ form_row(nameForm.name, {'attr': {'class': 'form-control'}}) }}
+        <button class="btn btn-primary">Salvar Nome</button>
+    {{ form_end(nameForm) }}
 
-    <div class="mt-3">
+    <hr class="my-4">
+
+    {# Formulário para alterar senha #}
+    <h4>Alterar Senha</h4>
+    {{ form_start(passwordForm) }}
+        {{ form_row(passwordForm.password) }}
+        {{ form_row(passwordForm.confirm_password) }}
+        <button class="btn btn-dark">Alterar Senha</button>
+    {{ form_end(passwordForm) }}
+
+    <div class="mt-3 text-center">
         {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
-            <a href="{{ path('app_tenant_index') }}" class="btn btn-secondary">Voltar para a lista</a>
-        {% endif %}
-
-        {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
+            <a href="{{ path('app_tenant_index') }}" class="btn btn-secondary">Voltar</a>
             {{ include('tenant/_delete_form.html.twig') }}
         {% endif %}
     </div>

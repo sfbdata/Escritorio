@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Usuários do Tenant{% endblock %}
+
+{% block body %}
+<div class="tenant-container">
+    <h2 class="page-title">Usuários do Escritório {{ tenant.name }}</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Criado em</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.fullName }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% for role in user.roles %}
+                            <span class="badge bg-secondary">{{ role }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>
+                        <a href="{{ path('app_tenant_user_edit_role', {tenantId: tenant.id, id: user.id}) }}"
+                           class="btn btn-sm btn-primary">
+                            Editar Roles
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">Nenhum usuário encontrado para este Tenant.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <a href="{{ path('app_tenant_index') }}" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
+{% endblock %}

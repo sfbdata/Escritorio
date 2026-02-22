@@ -5,25 +5,126 @@
             <a class="nav-link" href="{{ path('homepage') }}">Home</a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('cliente_index') }}">Clientes</a>
+        </li>
+
+        <hr class="my-2">
+
         {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
+            {% set superAdminRoutes = ['app_tenant_index', 'app_tenant_new', 'app_tenant_show', 'app_tenant_users'] %}
+            {% set isSuperAdminActive = app.request.attributes.get('_route') in superAdminRoutes %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_tenant_index') }}">Tenants</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_tenant_new') }}">Novo Tenant</a>
-            </li>
-        {% elseif 'ROLE_ADMIN' in app.user.roles %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('invite_user') }}">Convidar Usuários</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_tenant_show', {'id': app.user.tenant.id}) }}">Meu Tenant</a>
+                <a class="nav-link d-flex justify-content-between align-items-center" 
+                   data-bs-toggle="collapse" href="#superAdminMenu" role="button" 
+                   aria-expanded="{{ isSuperAdminActive ? 'true' : 'false' }}" aria-controls="superAdminMenu">
+                    SUPER-ADMIN
+                    <span class="arrow"></span>
+                </a>
+                <div class="collapse{% if isSuperAdminActive %} show{% endif %}" id="superAdminMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_tenant_index') }}" onclick="event.stopPropagation()">Tenants</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_tenant_new') }}" onclick="event.stopPropagation()">Novo Tenant</a></li>
+                    </ul>
+                </div>
             </li>
         {% endif %}
 
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('app_logout') }}">Sair</a>
-        </li>
+        {% if 'ROLE_ADMIN' in app.user.roles %}
+            {% set adminRoutes = ['invite_user', 'app_tenant_users', 'app_tenant_show'] %}
+            {% set isAdminActive = app.request.attributes.get('_route') in adminRoutes %}
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" 
+                   data-bs-toggle="collapse" href="#adminMenu" role="button" 
+                   aria-expanded="{{ isAdminActive ? 'true' : 'false' }}" aria-controls="adminMenu">
+                    ADMIN
+                    <span class="arrow"></span>
+                </a>
+                <div class="collapse{% if isAdminActive %} show{% endif %}" id="adminMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link" href="{{ path('invite_user') }}" onclick="event.stopPropagation()">Convidar Usuários</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_tenant_users', {'id': app.user.tenant.id}) }}" onclick="event.stopPropagation()">Funcionários</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_tenant_show', {'id': app.user.tenant.id}) }}" onclick="event.stopPropagation()">Meu Escritório</a></li>
+                    </ul>
+                </div>
+            </li>
+        {% endif %}
+
+        {% if 'ROLE_COMERCIAL' in app.user.roles %}
+            {% set comercialRoutes = ['pre_cadastro_index', 'pre_cadastro_new', 'pre_cadastro_show', 'cliente_from_pre_cadastro'] %}
+            {% set isComercialActive = app.request.attributes.get('_route') in comercialRoutes %}
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" 
+                   data-bs-toggle="collapse" href="#comercialMenu" role="button" 
+                   aria-expanded="{{ isComercialActive ? 'true' : 'false' }}" aria-controls="comercialMenu">
+                    COMERCIAL
+                    <span class="arrow"></span>
+                </a>
+                <div class="collapse{% if isComercialActive %} show{% endif %}" id="comercialMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link" href="{{ path('pre_cadastro_index') }}" onclick="event.stopPropagation()">Pré-Cadastros</a></li>
+                    </ul>
+                </div>
+            </li>
+        {% endif %}
+
+        {% if 'ROLE_CLOSER' in app.user.roles %}
+            {% set closerRoutes = ['closer_negociacoes', 'closer_contratos'] %}
+            {% set isCloserActive = app.request.attributes.get('_route') in closerRoutes %}
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" 
+                   data-bs-toggle="collapse" href="#closerMenu" role="button" 
+                   aria-expanded="{{ isCloserActive ? 'true' : 'false' }}" aria-controls="closerMenu">
+                    CLOSER
+                    <span class="arrow"></span>
+                </a>
+                <div class="collapse{% if isCloserActive %} show{% endif %}" id="closerMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="event.stopPropagation()">Negociações</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="event.stopPropagation()">Contratos</a></li>
+                    </ul>
+                </div>
+            </li>
+        {% endif %}
+
+        {% if 'ROLE_FINANCEIRO' in app.user.roles %}
+            {% set financeiroRoutes = ['financeiro_relatorios', 'financeiro_pagamentos'] %}
+            {% set isFinanceiroActive = app.request.attributes.get('_route') in financeiroRoutes %}
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" 
+                   data-bs-toggle="collapse" href="#financeiroMenu" role="button" 
+                   aria-expanded="{{ isFinanceiroActive ? 'true' : 'false' }}" aria-controls="financeiroMenu">
+                    FINANCEIRO
+                    <span class="arrow"></span>
+                </a>
+                <div class="collapse{% if isFinanceiroActive %} show{% endif %}" id="financeiroMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="event.stopPropagation()">Relatórios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="event.stopPropagation()">Pagamentos</a></li>
+                    </ul>
+                </div>
+            </li>
+        {% endif %}
+
+        {% if 'ROLE_OPERACIONAL' in app.user.roles %}
+            {% set operacionalRoutes = ['operacional_tarefas', 'operacional_projetos'] %}
+            {% set isOperacionalActive = app.request.attributes.get('_route') in operacionalRoutes %}
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" 
+                   data-bs-toggle="collapse" href="#operacionalMenu" role="button" 
+                   aria-expanded="{{ isOperacionalActive ? 'true' : 'false' }}" aria-controls="operacionalMenu">
+                    OPERACIONAL
+                    <span class="arrow"></span>
+                </a>
+                <div class="collapse{% if isOperacionalActive %} show{% endif %}" id="operacionalMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="event.stopPropagation()">Tarefas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="event.stopPropagation()">Projetos</a></li>
+                    </ul>
+                </div>
+            </li>
+        {% endif %}
+
     </ul>
 
     <div class="sidebar-user">

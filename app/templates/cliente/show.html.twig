@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalhes do Cliente{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    {% if cliente.cpf is defined %}
+        <h2 class="mb-3">Cliente - Pessoa Física</h2>
+
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5>Dados Pessoais</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nome:</strong> {{ cliente.nomeCompleto }}</p>
+                        <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
+                        <p><strong>Data de Nascimento:</strong> 
+                            {% if cliente.dataNascimento %}
+                                {{ cliente.dataNascimento|date('d/m/Y') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Estado Civil:</strong> {{ cliente.estadoCivil ?: '-' }}</p>
+                        <p><strong>Profissão:</strong> {{ cliente.profissao ?: '-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5>RG</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>RG:</strong> {{ cliente.rg }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Órgão Expedidor:</strong> {{ cliente.rgOrgaoExpedidor }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Data de Emissão:</strong> 
+                            {% if cliente.rgDataEmissao %}
+                                {{ cliente.rgDataEmissao|date('d/m/Y') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <h2 class="mb-3">Cliente - Pessoa Jurídica</h2>
+
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5>Dados da Empresa</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Razão Social:</strong> {{ cliente.razaoSocial }}</p>
+                        <p><strong>Nome Fantasia:</strong> {{ cliente.nomeFantasia ?: '-' }}</p>
+                        <p><strong>CNPJ:</strong> {{ cliente.cnpj }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Inscrição Estadual:</strong> {{ cliente.inscricaoEstadual ?: '-' }}</p>
+                        <p><strong>Inscrição Municipal:</strong> {{ cliente.inscricaoMunicipal ?: '-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5>Representante Legal</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nome:</strong> {{ cliente.representanteLegal }}</p>
+                        <p><strong>CPF:</strong> {{ cliente.representanteCpf }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>RG:</strong> {{ cliente.representanteRg }}</p>
+                        <p><strong>Cargo:</strong> {{ cliente.representanteCargo }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h5>Contato</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>E-mail:</strong> {{ cliente.email }}</p>
+                    <p><strong>Celular:</strong> {{ cliente.telefoneCelular ?: '-' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Telefone Fixo:</strong> {{ cliente.telefoneFixo ?: '-' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header bg-warning text-white">
+            <h5>Endereço</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <p><strong>CEP:</strong> {{ cliente.cep }}</p>
+                    <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
+                    {% if cliente.complemento %}
+                        <p><strong>Complemento:</strong> {{ cliente.complemento }}</p>
+                    {% endif %}
+                    <p><strong>Cidade:</strong> {{ cliente.cidade }} - {{ cliente.estado }}</p>
+                    {% if cliente.enderecSede is defined and cliente.enderecSede %}
+                        <p><strong>Endereço da Sede:</strong> {{ cliente.enderecSede }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5>Informações</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Criado em:</strong> 
+                {% if cliente.criadoAt %}
+                    {{ cliente.criadoAt|date('d/m/Y H:i') }}
+                {% else %}
+                    -
+                {% endif %}
+            </p>
+            <p><strong>Modificado em:</strong> 
+                {% if cliente.modificadoEm %}
+                    {{ cliente.modificadoEm|date('d/m/Y H:i') }}
+                {% else %}
+                    -
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+        <div class="card mt-3">
+            <div class="card-header bg-dark text-white">
+                <h5>Contrato</h5>
+            </div>
+            <div class="card-body">
+                {% if cliente.contratoEnviado %}
+                    <p><strong>Arquivo do Contrato:</strong>
+                        <a href="/uploads/contratos/{{ cliente.contratoArquivo }}" target="_blank">{{ cliente.contratoArquivo }}</a>
+                        <span class="badge bg-success ms-2">Enviado</span>
+                    </p>
+                {% else %}
+                    <p><strong>Arquivo do Contrato:</strong> <span class="badge bg-secondary">Não enviado</span></p>
+                {% endif %}
+            </div>
+        </div>
+
+    <a href="{{ path('cliente_edit', {id: cliente.id}) }}" class="btn btn-warning mt-3">Editar</a>
+    <a href="{{ path('cliente_index') }}" class="btn btn-secondary mt-3">Voltar</a>
+</div>
+{% endblock %}

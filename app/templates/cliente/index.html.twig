@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="mb-4">Clientes</h2>
+
+    <div class="mb-3">
+        <a href="{{ path('cliente_new_pf') }}" class="btn btn-success">Novo Cliente PF</a>
+        <a href="{{ path('cliente_new_pj') }}" class="btn btn-primary">Novo Cliente PJ</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome/Razão Social</th>
+                <th>CPF/CNPJ</th>
+                <th>Tipo</th>
+                <th>Status do Contrato</th>
+                <th>Celular</th>
+                <th>Criado em</th>
+                <th>Modificado em</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+                <tr>
+                    <td>
+                        {% if cliente.cpf is defined %}
+                            {{ cliente.nomeCompleto }}
+                        {% else %}
+                            {{ cliente.razaoSocial }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cliente.cpf is defined %}
+                            {{ cliente.cpf }}
+                        {% else %}
+                            {{ cliente.cnpj }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cliente.cpf is defined %}
+                            <span class="badge bg-info">Pessoa Física</span>
+                        {% else %}
+                            <span class="badge bg-warning">Pessoa Jurídica</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cliente.contratoEnviado %}
+                            <span class="badge bg-success">Enviado</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Não enviado</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ cliente.telefoneCelular ?: '-' }}</td>
+                    <td>
+                        {% if cliente.criadoAt %}
+                            {{ cliente.criadoAt|date('d/m/Y H:i') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cliente.modificadoEm %}
+                            {{ cliente.modificadoEm|date('d/m/Y H:i') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('cliente_show', {id: cliente.id}) }}" class="btn btn-sm btn-info">Ver</a>
+                        <a href="{{ path('cliente_edit', {id: cliente.id}) }}" class="btn btn-sm btn-warning">Editar</a>
+                        <form method="POST" action="{{ path('cliente_delete', {id: cliente.id}) }}" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cliente.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Nenhum cliente encontrado.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

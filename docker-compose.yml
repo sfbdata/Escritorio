@@ -5,6 +5,8 @@ services:
     build: .
     container_name: php
     working_dir: /var/www
+    environment:
+      TZ: America/Sao_Paulo
     volumes:
       - .:/var/www
     networks:

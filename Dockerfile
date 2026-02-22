@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
     zip \
     && docker-php-ext-install pdo pdo_pgsql zip
 
+# Configurar timezone no PHP
+RUN echo "date.timezone = America/Sao_Paulo" >> /usr/local/etc/php/php.ini
+
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin --filename=composer

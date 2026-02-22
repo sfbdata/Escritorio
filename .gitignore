@@ -9,3 +9,21 @@
 # Histórico e cache locais
 .bash_history
 .composer/
+
+# Dependências (instaladas via composer)
+/vendor/
+/app/vendor/
+
+# Arquivos de ambiente com credenciais
+/app/.env
+.env.local
+.env.*.local
+
+# Uploads de usuários
+/app/public/uploads/
+
+# Cache e logs do Symfony
+/app/var/cache/*
+/app/var/log/*
+!/app/var/cache/.gitkeep
+!/app/var/log/.gitkeep

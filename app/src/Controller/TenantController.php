@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Tenant;
 use App\Entity\User;
 use App\Form\TenantType;
+use App\Form\TenantNameType;
+use App\Form\TenantPasswordType;
 use App\Repository\TenantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,10 +28,8 @@ final class TenantController extends AbstractController
         }
 
         if (in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true)) {
-            // SUPER_ADMIN vê todos os Tenants
             $tenants = $tenantRepository->findAll();
         } elseif (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-            // ADMIN vê apenas o Tenant ao qual pertence
             $tenants = [$user->getTenant()];
         } else {
             throw $this->createAccessDeniedException('Você não tem permissão para acessar Tenants.');
@@ -54,7 +54,6 @@ final class TenantController extends AbstractController
             $entityManager->persist($tenant);
             $entityManager->flush();
 
-            // Criar usuário administrador vinculado ao Tenant
             $adminEmail = $form->get('adminEmail')->getData();
             $adminPassword = $form->get('adminPassword')->getData();
 
@@ -104,31 +103,58 @@ final class TenantController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_tenant_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Tenant $tenant, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        Request $request,
+        Tenant $tenant,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
         $user = $this->getUser();
 
         if (!$user) {
             throw $this->createAccessDeniedException();
         }
 
-        if (in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true) ||
-            (in_array('ROLE_ADMIN', $user->getRoles(), true) && $user->getTenant() === $tenant)) {
-            $form = $this->createForm(TenantType::class, $tenant);
-        } else {
+        if (!(in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true) ||
+            (in_array('ROLE_ADMIN', $user->getRoles(), true) && $user->getTenant() === $tenant))) {
             throw $this->createAccessDeniedException('Você não tem permissão para editar este Tenant.');
         }
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
+        // Form para editar nome
+        $nameForm = $this->createForm(TenantNameType::class, $tenant);
+        $nameForm->handleRequest($request);
+        if ($nameForm->isSubmitted() && $nameForm->isValid()) {
             $entityManager->flush();
-            return $this->redirectToRoute('app_tenant_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Nome do Tenant atualizado com sucesso!');
+            return $this->redirectToRoute('app_tenant_edit', ['id' => $tenant->getId()]);
+        }
+
+        // Form para alterar senha
+        $passwordForm = $this->createForm(TenantPasswordType::class, $tenant);
+        $passwordForm->handleRequest($request);
+        if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
+            $newPassword = $passwordForm->get('password')->getData();
+            $confirmPassword = $passwordForm->get('confirm_password')->getData();
+
+            if ($newPassword !== $confirmPassword) {
+                $this->addFlash('error', 'As senhas não coincidem.');
+            } else {
+                $adminUser = $entityManager->getRepository(User::class)
+                    ->findOneBy(['tenant' => $tenant, 'roles' => ['ROLE_ADMIN']]);
+
+                if ($adminUser) {
+                    $adminUser->setPassword($passwordHasher->hashPassword($adminUser, $newPassword));
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Senha do administrador alterada com sucesso!');
+                }
+            }
+            return $this->redirectToRoute('app_tenant_edit', ['id' => $tenant->getId()]);
         }
 
         return $this->render('tenant/edit.html.twig', [
             'tenant' => $tenant,
-            'form' => $form,
+            'nameForm' => $nameForm->createView(),
+            'passwordForm' => $passwordForm->createView(),
         ]);
     }
 
@@ -152,4 +178,62 @@ final class TenantController extends AbstractController
 
         return $this->redirectToRoute('app_tenant_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/users', name: 'app_tenant_users', methods: ['GET'])]
+    public function listUsers(Tenant $tenant): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // Apenas SUPER_ADMIN ou ADMIN do Tenant podem ver
+        if (!(in_array('ROLE_SUPER_ADMIN', $user->getRoles(), true) ||
+            (in_array('ROLE_ADMIN', $user->getRoles(), true) && $user->getTenant() === $tenant))) {
+            throw $this->createAccessDeniedException('Você não tem permissão para ver os usuários deste Tenant.');
+        }
+
+        return $this->render('tenant/users.html.twig', [
+            'tenant' => $tenant,
+            'users' => $tenant->getUsers(),
+        ]);
+        
+    }
+
+        #[Route('/{tenantId}/user/{id}/edit-role', name: 'app_tenant_user_edit_role', methods: ['GET','POST'])]
+    public function editUserRole(
+        int $tenantId,
+        User $user,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $currentUser = $this->getUser();
+
+        if (!$currentUser) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!(in_array('ROLE_SUPER_ADMIN', $currentUser->getRoles(), true) ||
+            (in_array('ROLE_ADMIN', $currentUser->getRoles(), true) && $currentUser->getTenant()->getId() === $tenantId))) {
+            throw $this->createAccessDeniedException('Você não tem permissão para editar roles.');
+        }
+
+        $form = $this->createForm(\App\Form\UserRolesType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Roles atualizadas com sucesso!');
+            return $this->redirectToRoute('app_tenant_users', ['id' => $tenantId]);
+        }
+
+        return $this->render('tenant/edit_user_role.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
+    }
+
+    
+
 }
